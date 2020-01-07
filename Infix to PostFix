@@ -1,0 +1,117 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct stack
+{
+    int top,*arr;
+    unsigned capacity;
+};
+
+struct stack *createStack(unsigned capacity)
+{
+    struct stack *st = (struct stack *)malloc(sizeof(struct stack));
+    
+    if(!st)
+    return NULL;
+    
+    st -> top = -1;
+    st -> capacity = capacity;
+    st -> arr = (int *)malloc(st->capacity * sizeof(int));
+    
+    if(!st -> arr)
+    return NULL;
+    
+    return st;
+}
+
+int isEmpty(struct stack *st)
+{
+    return st -> top == -1;
+}
+
+char peek(struct stack *st)
+{
+    return st -> arr [st -> top];
+}
+
+char pop(struct stack *st)
+{
+    if(!isEmpty(st))
+    return st -> arr [st -> top--];
+}
+
+void push(struct stack *st,char op)
+{
+    st -> arr [++st->top] = op;
+}
+
+int isOperand(char ch)
+{
+    return (ch >= 'a' &&  ch <= 'z' ) || (ch >= 'A' && ch <= 'Z') ;
+}
+
+int prec(char ch)
+{
+    switch(ch)
+    {
+        case '+':
+        case '-': return 1;
+        case '*':
+        case '/': return 2;
+        case '^': return 3;
+    }
+    return -1;
+}
+
+int infixtopostfix(char* expr)
+{
+    int i,k;
+    struct stack *st = createStack(strlen(expr));
+    
+    if(!st) return -1; 
+    
+    for(i=0 , k=-1 ; expr[i] ; i++)
+    {
+        //if scanned character is an operand , output it
+        if(isOperand(expr[i]))
+           expr[++k] = expr[i];
+           
+           // if it is '(' , push into the stack
+        else if(expr[i] == '(')
+           push(st , expr[i]);
+           
+        else if(expr[i] == ')')
+        {
+            // pop elements until '('
+            while(!isEmpty(st) && peek(st) != '(')
+                 expr[++k] = pop(st);
+            if(!isEmpty(st) && peek(st) != '(')
+                 return -1;
+            else
+                 pop(st);
+        }
+        // operator is found
+        else 
+        {
+            while(!isEmpty(st) && prec(expr[i]) <= prec(peek(st)))
+                  expr[++k] = pop(st);
+            push(st,expr[i]);
+        }
+    }
+    
+    //pop remaining elements 
+    while(!isEmpty(st))
+       expr[++k] = pop(st);
+       
+    expr[++k] = '\0'; 
+    printf("%s",expr);
+}
+
+int main()
+{ 
+    char exp[] = "a+b*(c^d-e)^(f+g*h)-i"; 
+    infixtopostfix(exp);
+    
+    return 0;
+}
