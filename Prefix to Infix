@@ -1,0 +1,83 @@
+//prefix to infix
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#define M 30 
+
+char stack[M][M];
+int top = -1;
+
+void push(char str[])
+{
+    if(top != M-1)
+    strcpy(stack[++top],str);
+    else
+    printf("Stack overflow");
+}
+
+void pop(char str[])
+{
+    if(top != -1)
+    strcpy(str,stack[top--]);
+    else
+    printf("Stack underflow");
+}
+
+int isoperator(char c)
+{
+   /* switch(c)
+    {
+        case '+' :
+        case '-' :
+        case '*' :
+        case '/' :
+        case '^' :
+        return 1;
+    }*/
+    if(c=='+' || c=='-' || c=='*' || c=='/' || c=='^' )
+    return 1;
+    return 0;
+}
+
+void prefixToInfix(char prefix[],char infix[])
+{
+    char op[2];
+    char popped1[M] , popped2[M] , temp[M];
+    int i = strlen(prefix);
+    op[1] = '\0';
+    
+    while(--i != -1)
+    {
+        if(prefix[i] == ' ')
+        {
+            continue;
+        }
+        
+        if(isoperator(prefix[i]))
+        {
+            pop(popped1);
+            pop(popped2); 
+            op[0] = prefix[i];
+            strcpy(temp,popped1);
+            strcat(temp,op);
+            strcat(temp,popped2);
+            push(temp);
+        }
+        else
+        {
+            op[0] = prefix[i]; //operand
+            push(op);
+        }
+    }
+    pop(infix);
+}
+int main()
+{
+    char prefix[] = "+-*^ABCD//EF+GH";
+    char infix[M];
+    prefixToInfix(prefix,infix);
+    printf("%s\n",prefix);
+    printf("%s\n",infix);
+
+    return 0;
+}
