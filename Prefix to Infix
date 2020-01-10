@@ -58,9 +58,11 @@ void prefixToInfix(char prefix[],char infix[])
             pop(popped1);
             pop(popped2); 
             op[0] = prefix[i];
-            strcpy(temp,popped1);
+            strcpy(temp,"(");
+            strcat(temp,popped1);
             strcat(temp,op);
             strcat(temp,popped2);
+            strcat(temp,")");
             push(temp);
         }
         else
