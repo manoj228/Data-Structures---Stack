@@ -1,0 +1,81 @@
+//postfix to infix
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#define M 30 
+
+char stack[M][M];
+int top = -1;
+
+void push(char str[])
+{
+    if(top != M-1)
+    strcpy(stack[++top],str);
+    else
+    printf("Stack overflow\n");
+}
+
+void pop(char str[])
+{
+    if(top != -1)
+    strcpy(str,stack[top--]);
+    else
+    printf("Stack underflow\n");
+}
+
+int isoperator(char c)
+{
+   
+    if(c=='+' || c=='-' || c=='*' || c=='/' || c=='^' )
+    return 1;
+    return 0;
+}
+
+void postToinfix(char postfix[],char infix[])
+{
+    char op[2];
+    char popped1[M] , popped2[M] , temp[M];
+    op[1] = '\0';
+    int i =0;
+    
+    while(i < strlen(postfix)) 
+    {
+        
+        if(postfix[i] == ' ')
+        {
+            continue;
+        }
+        
+        if(isoperator(postfix[i]))
+        {
+            pop(popped1); 
+            pop(popped2);
+            op[0] = postfix[i];
+            strcpy(temp,"(");
+            strcat(temp,popped2);
+             strcat(temp,op);
+            strcat(temp,popped1);
+            strcat(temp,")");
+            
+            push(temp);
+        }
+        else
+        {
+            op[0] = postfix[i]; //operand
+            push(op);
+        } 
+        i++;
+    }
+    pop(infix);
+}
+int main()
+{
+    char postfix[] = "abc++";
+    char infix[M];
+    postToinfix(postfix,infix);
+   
+    printf("%s\n",postfix);
+     printf("%s\n",infix);
+
+    return 0;
+}
